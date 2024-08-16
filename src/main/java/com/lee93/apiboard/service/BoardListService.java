@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ListService {
+public class BoardListService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     private final BoardDAO boardDAO;
 
-    public ListService(BoardDAO boardDAO) {
+    public BoardListService(BoardDAO boardDAO) {
         this.boardDAO = boardDAO;
     }
 
