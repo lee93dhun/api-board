@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee93.apiboard.dao.CategoryDAO">
+
+    <select id="getAllCategory" resultType="CategoryVO">
+        SELECT
+            category_id AS categoryId,
+            category_name AS categoryName
+        FROM category ORDER BY category_name ASC;
+    </select>
+
+</mapper>
