@@ -21,44 +21,30 @@
         </where>
     </sql>
 
+
     <select id="getPostCount" parameterType="BoardFilterVO" resultType="int">
         SELECT COUNT(*) FROM post p JOIN category c ON c.category_id = p.category_id
         <include refid="board_filter_where"/>
     </select>
 
-<!--    <select id="getBoardListByParams" parameterType="com.lee93.simpleboard.dto.BoardListParamDto" resultType="com.lee93.simpleboard.dto.BoardListDto">-->
-<!--        SELECT-->
-<!--        p.post_id,-->
-<!--        p.post_writer,-->
-<!--        p.post_title,-->
-<!--        p.post_content ,-->
-<!--        c.category_id ,-->
-<!--        c.category_name ,-->
-<!--        p.post_hits ,-->
-<!--        p.upload_datetime ,-->
-<!--        p.update_datetime-->
-<!--        FROM post p JOIN category c ON c.category_id = p.category_id-->
-<!--        <where>-->
-<!--            <if test="categoryId != null and categoryId != 0">-->
-<!--                AND c.category_id = #{categoryId}-->
-<!--            </if>-->
-<!--            <if test="keyword != null and keyword != ''">-->
-<!--                AND (-->
-<!--                p.post_title LIKE CONCAT('%', #{keyword}, '%') OR-->
-<!--                p.post_writer LIKE CONCAT('%', #{keyword}, '%') OR-->
-<!--                p.post_content LIKE CONCAT('%', #{keyword}, '%')-->
-<!--                )-->
-<!--            </if>-->
-<!--            <if test="(startDate != null and endDate != null) and (startDate != '' and endDate != '')">-->
-<!--                AND DATE(p.upload_datetime) BETWEEN DATE(#{startDate}) AND DATE(#{endDate})-->
-<!--            </if>-->
-<!--        </where>-->
-<!--        ORDER BY p.upload_datetime DESC-->
-<!--        LIMIT #{offset}, #{pageSize} ;-->
-<!--    </select>-->
+    <select id="getBoardListByFilter" parameterType="BoardListReqVO" resultType="BoardListRespVO">
+        SELECT
+        p.post_id,
+        p.post_writer,
+        p.post_title,
+        p.post_content ,
+        c.category_name ,
+        p.post_hits ,
+        p.upload_datetime ,
+        p.update_datetime
+        FROM post p JOIN category c ON c.category_id = p.category_id
+        <include refid="board_filter_where"/>
+        ORDER BY p.upload_datetime DESC
+        LIMIT #{offset}, #{pageSize} ;
+    </select>
 
-<!--    <select id="categoryById" parameterType="Integer" resultType="String">-->
-<!--        SELECT category_name FROM category WHERE category_id = #{categoryId}-->
-<!--    </select>-->
+    <select id="categoryById" parameterType="Integer" resultType="String">
+        SELECT category_name FROM category WHERE category_id = #{categoryId}
+    </select>
 
 </mapper>

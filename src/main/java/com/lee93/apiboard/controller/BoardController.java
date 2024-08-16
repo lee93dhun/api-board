@@ -2,17 +2,12 @@ package com.lee93.apiboard.controller;
 
 import com.lee93.apiboard.service.CategoryService;
 import com.lee93.apiboard.service.ListService;
-import com.lee93.apiboard.vo.BoardFilterVO;
-import com.lee93.apiboard.vo.CategoryVO;
-import com.lee93.apiboard.vo.ResponseBoardList;
+import com.lee93.apiboard.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,15 +30,32 @@ public class BoardController {
     }
 
     @GetMapping(path="/list")
-    public ResponseEntity list(@ModelAttribute BoardFilterVO boardFilterVO,
+    public ResponseEntity getList(@ModelAttribute BoardFilterVO boardFilterVO,
                                @RequestParam(required = false, defaultValue = "1") int page){
         logger.info(":::: GET / list 요청 :::: ");
+
         List<CategoryVO> categoryList = categoryService.getCategoryList();
-        int PostCount = listService.getPostCount(boardFilterVO);
+        int postCount = listService.getPostCount(boardFilterVO);
+        BoardListReqVO boardListReqVO = listService.buildBoardListReqVO(boardFilterVO, page);
+        PageVO  pageVO = listService.getPageVO(page, postCount);
 
+        List<BoardListRespVO> boardListByFilter = listService.getBoardListByFilter(boardListReqVO);
 
-        ResponseBoardList responseBoardList = new ResponseBoardList();
-        return ResponseEntity.ok(responseBoardList);
+        RespListPageVO respListPageVO = new RespListPageVO();
+        respListPageVO.setCategoryList(categoryList);
+        respListPageVO.setPostCount(postCount);
+        respListPageVO.setBoardFilterVO(boardFilterVO);
+        respListPageVO.setBoardListByFilter(boardListByFilter);
+        respListPageVO.setPageVO(pageVO);
+
+        return ResponseEntity.ok(respListPageVO);
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<String> postRegister(@ModelAttribute PostRegisterVO postRegisterVO){
+        logger.info(":::: POST / post 요청 :::: ");
+        logger.info("postRegisterVO : {}", postRegisterVO);
+        return null;
     }
 
 

@@ -5,5 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResponseBoardList {
+public class PageVO {
+    private int currentPage;
+    private int totalPage;
 }
