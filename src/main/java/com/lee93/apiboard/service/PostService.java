@@ -27,6 +27,7 @@ public class PostService {
         postRegisterVO.setPostPw(encodedPassword);
         logger.info("Encoded Password Check: {} ", postRegisterVO.getPostPw());
         // TODO 유효성 검사하기
+
         postDAO.postRegister(postRegisterVO);
     }
 

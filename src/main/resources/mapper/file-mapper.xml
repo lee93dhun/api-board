@@ -1,0 +1,25 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee93.apiboard.dao.FileDAO">
+
+    <insert id="saveFile" parameterType="List">
+        INSERT INTO files (
+            post_id,
+            file_origin,
+            file_new,
+            file_path,
+            file_size
+        )
+        VALUES
+        <foreach collection="list" item="file" separator=",">
+        (
+            #{file.postId},
+            #{file.fileOrigin},
+            #{file.fileNew},
+            #{file.filePath},
+            #{file.fileSize}
+        )
+        </foreach>
+    </insert>
+</mapper>
