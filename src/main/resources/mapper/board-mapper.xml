@@ -36,7 +36,8 @@
         c.category_name ,
         p.post_hits ,
         p.upload_datetime ,
-        p.update_datetime
+        p.update_datetime,
+        EXISTS(SELECT 1 FROM files f WHERE f.post_id = p.post_id) AS has_files
         FROM post p JOIN category c ON c.category_id = p.category_id
         <include refid="board_filter_where"/>
         ORDER BY p.upload_datetime DESC

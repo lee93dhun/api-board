@@ -43,6 +43,7 @@ public class BoardListService {
     public List<BoardListRespVO> getBoardListByFilter(BoardListReqVO boardListReqVO) {
         logger.info(" ## getBoardListByFilter() 실행");
         List<BoardListRespVO> boardListByFilter = boardDAO.getBoardListByFilter(boardListReqVO);
+
         return  boardListByFilter;
     }
 

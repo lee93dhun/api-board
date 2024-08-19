@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,4 +18,6 @@ public class BoardListRespVO {
     private LocalDateTime updateDatetime;
 
     private String categoryName;
+
+    private boolean hasFiles;
 }
