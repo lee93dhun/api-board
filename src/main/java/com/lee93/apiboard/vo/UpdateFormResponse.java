@@ -13,6 +13,8 @@ import java.util.List;
 public class UpdateFormResponse {
     private boolean success;
     private String message;
+
     private PostVO postVO;
+    private List<CategoryVO> categoryList = new ArrayList<>();
     private List<FileVO> files = new ArrayList<>();
 }

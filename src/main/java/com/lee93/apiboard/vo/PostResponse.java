@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterResponse {
+public class PostResponse {
 
     private boolean success;
     private String message;
-    private PostFileRegisterVO postFileRegisterVO;
+    private PostRequestVO postRequestVO;
 
 
 }

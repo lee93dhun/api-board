@@ -23,14 +23,16 @@ public class BoardController {
     private final BoardListService boardListService;
     private final FileUtils fileUtils;
     private final FileService fileService;
+    private final SecurityService securityService;
 
-    public BoardController(CategoryService categoryService, BoardListService boardListService, PostService postService, FileUtils fileUtils, FileService fileService, CommentService commentService) {
+    public BoardController(CategoryService categoryService, BoardListService boardListService, PostService postService, FileUtils fileUtils, FileService fileService, CommentService commentService, SecurityService securityService) {
         this.categoryService = categoryService;
         this.boardListService = boardListService;
         this.postService = postService;
         this.fileUtils = fileUtils;
         this.fileService = fileService;
         this.commentService = commentService;
+        this.securityService = securityService;
     }
 
     @GetMapping(path={"/","/board-api"})
@@ -83,28 +85,28 @@ public class BoardController {
 
     /**
      * 게시물 등록
-     * @param postFileRegisterVO 게시물 등록에 필요한 Value Object
-     * @return 등록 성공여부에따라 메시지, PostRegisterVo 객체를 포함한 응답 객체
+     * @param postRequestVO 게시물 등록에 필요한 Value Object
+     * @return 등록 성공여부에따라 메시지, PostRequestVo 객체를 포함한 응답 객체
      */
     @PostMapping(path="/post")
-    public ResponseEntity<RegisterResponse> postRegister(@ModelAttribute PostFileRegisterVO postFileRegisterVO){
+    public ResponseEntity<PostResponse> postRegister(@ModelAttribute PostRequestVO postRequestVO){
         logger.info(":::: POST / post 요청 :::: ");
 
         try{
-            postService.postRegister(postFileRegisterVO);
-            int postId = postFileRegisterVO.getPostId();
+            postService.postRegister(postRequestVO);
+            int postId = postRequestVO.getPostId();
 
             // 파일을 로컬에 저장하기
-            List<FileVO> files = fileUtils.uploadFiles(postFileRegisterVO.getFiles());
+            List<FileVO> files = fileUtils.uploadFiles(postRequestVO.getFiles());
             // DB에 파일 정보 저장
             fileService.saveFiles(postId, files);
 
             // TODO 유효성 검사에 따른 예외처리 추가 및 수정하기
-            return ResponseEntity.ok(new RegisterResponse(true, null,null));
+            return ResponseEntity.ok(new PostResponse(true, null,null));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterResponse(false, "서버 오류가 발생했습니다.", postFileRegisterVO));
+                    .body(new PostResponse(false, "서버 오류가 발생했습니다.", postRequestVO));
         }
     }
 
@@ -142,12 +144,31 @@ public class BoardController {
     @GetMapping(path="/post/update/{postId}")
     public ResponseEntity postUpdateForm(@PathVariable int postId){
         logger.info(" :::: GET / post / update form 요청 ::::");
+
+        List<CategoryVO>  categoryList = categoryService.getCategoryList();
         PostVO post = postService.getPost(postId);
         List<FileVO> files = fileService.getFiles(postId);
-        return ResponseEntity.ok(new UpdateFormResponse(true, null, post, files));
+
+        return ResponseEntity.ok(new UpdateFormResponse(true, null, post, categoryList, files));
     }
 
+    // TODO  PUT or PATCH ?
+    @PutMapping(path = "/post/update/{postId}")
+    public ResponseEntity<PostResponse> postUpdate(@PathVariable int postId, @ModelAttribute PostRequestVO postRequestVO){
+        logger.info(" :::: PUT / post/ update 요청 :::: ");
+        // 비밀번호 확인
+        boolean pwResult = securityService.isPasswordMatch(postId, postRequestVO.getPostPw());
+        if(!pwResult){
+            return ResponseEntity.ok(new PostResponse(false, "비밀번호를 확인해 주세요.",postRequestVO));
+        }
+        // 게시물 수정
+            postRequestVO.setPostId(postId);
+            // 수정날짜 업데이트
+            postService.updatePost(postRequestVO);
+        // 파일 수정
 
+        return ResponseEntity.ok(new PostResponse(true, postId+"번 게시물 수정 성공",null));
+    }
 
 
 }
