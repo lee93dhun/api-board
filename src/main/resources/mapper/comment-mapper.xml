@@ -8,4 +8,8 @@
         VALUES(#{commentWriter}, #{commentContent}, #{postId})
     </insert>
 
+    <select id="getComments" parameterType="int" resultType="CommentRespVO">
+        SELECT * FROM comments WHERE post_id = #{postId};
+    </select>
+
 </mapper>

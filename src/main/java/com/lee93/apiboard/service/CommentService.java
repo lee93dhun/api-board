@@ -19,8 +19,22 @@ public class CommentService {
         this.commentDAO = commentDAO;
     }
 
+    /**
+     * 댓글 저장
+     * @param commentReqVO 저장할 댓글의 정보
+     */
     public void saveComment(CommentReqVO commentReqVO) {
         logger.info(" ## saveComment() 실행");
         commentDAO.saveComment(commentReqVO);
+    }
+
+    /**
+     * 댓글 리스트  불러오기
+     * @param postId  불러올 댓글리스트의 게시물 id
+     * @return 게시물 id에 따른 댓글 리스트
+     */
+    public List<CommentRespVO> getComments(int postId) {
+        logger.info(" ## getComments 실행");
+        return commentDAO.getComments(postId);
     }
 }

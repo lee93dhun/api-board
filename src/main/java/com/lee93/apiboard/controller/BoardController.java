@@ -113,11 +113,9 @@ public class BoardController {
         logger.info(" :::: GET / post / {} 요청 ::::" , postId);
         // 게시물 내용 가져오기
         PostVO post = postService.getPost(postId);
-
-        // 파일 첨부 가져오기
         List<FileVO> files = fileService.getFiles(postId);
-        // 댓글 가져오기
-        return ResponseEntity.ok(new DetailResponse(true, null, post, files));
+        List<CommentRespVO> comments = commentService.getComments(postId);
+        return ResponseEntity.ok(new DetailResponse(true, null, post, files, comments));
         // TODO 실패할경우 로직
     }
 

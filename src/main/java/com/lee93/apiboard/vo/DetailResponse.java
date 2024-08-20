@@ -16,5 +16,5 @@ public class DetailResponse {
 
     private PostVO postVO;
     private List<FileVO> files = new ArrayList<>();
-    // TODO 댓글
+    private List<CommentRespVO> comments = new ArrayList<>();
 }
