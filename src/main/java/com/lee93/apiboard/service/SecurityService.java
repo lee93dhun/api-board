@@ -21,11 +21,11 @@ public class SecurityService {
     /**
      * 비밀번호 확인
      * @param postId 확인할 비밀번호의 게시물 id
-     * @param postPw 클라이언트에서 요청한 비밀번호
+     * @param inputPw 클라이언트에서 요청한 비밀번호
      * @return 요청한 비밀번호와 DB의 비밀번호 비교 결과
      */
-    public boolean isPasswordMatch(int postId, String postPw) {
+    public boolean isPasswordMatch(int postId, String inputPw) {
         String encodedPassword = postDAO.getPassword(postId);
-      return  passwordEncoder.matches(postPw, encodedPassword);
+      return  passwordEncoder.matches(inputPw, encodedPassword);
     }
 }

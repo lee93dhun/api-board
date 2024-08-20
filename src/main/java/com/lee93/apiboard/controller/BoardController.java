@@ -141,6 +141,11 @@ public class BoardController {
         return ResponseEntity.ok(true);
     }
 
+    /**
+     * 게시물 수정 페이지 요청
+     * @param postId 수정할 게시물 id
+     * @return
+     */
     @GetMapping(path="/post/update/{postId}")
     public ResponseEntity postUpdateForm(@PathVariable int postId){
         logger.info(" :::: GET / post / update form 요청 ::::");
@@ -152,6 +157,12 @@ public class BoardController {
         return ResponseEntity.ok(new UpdateFormResponse(true, null, post, categoryList, files));
     }
 
+    /**
+     * 게시물 수정
+     * @param postId 수정할 게시물 id
+     * @param postRequestVO 수정할 게시물의 정보
+     * @return
+     */
     // TODO  PUT or PATCH ?
     @PutMapping(path = "/post/update/{postId}")
     public ResponseEntity<PostResponse> postUpdate(@PathVariable int postId, @ModelAttribute PostRequestVO postRequestVO){
@@ -161,14 +172,28 @@ public class BoardController {
         if(!pwResult){
             return ResponseEntity.ok(new PostResponse(false, "비밀번호를 확인해 주세요.",postRequestVO));
         }
-        // 게시물 수정
             postRequestVO.setPostId(postId);
-            // 수정날짜 업데이트
             postService.updatePost(postRequestVO);
-        // 파일 수정
+        // TODO 첨부 파일 수정
 
         return ResponseEntity.ok(new PostResponse(true, postId+"번 게시물 수정 성공",null));
     }
 
+    // TODO 삭제시 DB 에서 삭제 or 리스트에서만 삭제
+    @PatchMapping(path= "/post/delete/{postId}")
+    public ResponseEntity deletePost(@PathVariable int postId, @RequestBody String inputPw){
+        logger.info(" :::: PATCH / post / delete 요청");
+        boolean pwResult = securityService.isPasswordMatch(postId, inputPw);
+        if(!pwResult){
+            return ResponseEntity.status(403).body("비밀번호를 확인해주세요.");
+        }
+        boolean success = postService.deletePost(postId);
+
+        if(success){
+            return null;
+        }else {
+            return null;
+        }
+    }
 
 }

@@ -46,9 +46,22 @@ public class PostService {
         return postDAO.getPost(postId);
     }
 
+    /**
+     * 게시물 수정
+     * @param postRequestVO 수정할 게시물 정보
+     */
     public void updatePost(PostRequestVO postRequestVO) {
         logger.info(" ## updatePost() 실행");
-
         postDAO.updatePost(postRequestVO);
+    }
+
+    /**
+     * 게시물 삭제 (DB 삭제 X)
+     * @param postId 삭제할 게시물 id
+     * @return 게시물 삭제 성공 여부
+     */
+    public boolean deletePost(int postId) {
+        logger.info(" ## deletePost() 실행");
+        return postDAO.deletePost(postId);
     }
 }

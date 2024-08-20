@@ -35,4 +35,11 @@
             update_datetime = CURRENT_TIMESTAMP
         WHERE post_id = #{postId}
     </update>
+
+    <update id="deletePost" parameterType="int">
+        UPDATE post
+        SET
+            is_delete = 1
+        WHERE post_id = #{postId}
+    </update>
 </mapper>

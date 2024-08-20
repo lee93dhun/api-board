@@ -14,4 +14,6 @@ public interface PostDAO {
     String getPassword(int postId);
 
     void updatePost(PostRequestVO postRequestVO);
+
+    boolean deletePost(int postId);
 }
