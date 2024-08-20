@@ -9,4 +9,6 @@ import java.util.List;
 public interface FileDAO {
 
     void saveFile(List<FileVO> files);
+
+    List<FileVO> getFiles(int postId);
 }

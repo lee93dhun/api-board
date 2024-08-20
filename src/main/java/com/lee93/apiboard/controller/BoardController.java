@@ -115,9 +115,9 @@ public class BoardController {
         PostVO post = postService.getPost(postId);
 
         // 파일 첨부 가져오기
-
+        List<FileVO> files = fileService.getFiles(postId);
         // 댓글 가져오기
-        return ResponseEntity.ok(new DetailResponse(true,null,post,null));
+        return ResponseEntity.ok(new DetailResponse(true, null, post, files));
     }
 
 

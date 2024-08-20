@@ -22,4 +22,16 @@
         )
         </foreach>
     </insert>
+
+    <select id="getFiles" parameterType="int" resultType="FileVO">
+        SELECT
+            file_id,
+            post_id,
+            file_origin,
+            file_new,
+            file_path,
+            file_size
+        FROM files
+        WHERE post_id = #{postId}
+    </select>
 </mapper>

@@ -37,6 +37,11 @@ public class PostService {
     }
 
 
+    /**
+     * 게시물 정보를 가져옴
+     * @param postId 가져올 게시물의 id
+     * @return postId에 해당하는 게시물 정보
+     */
     public PostVO getPost(int postId) {
         logger.info(" ## getPost() 실행");
         return postDAO.getPost(postId);

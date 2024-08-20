@@ -2,6 +2,8 @@ package com.lee93.apiboard.service;
 
 import com.lee93.apiboard.dao.FileDAO;
 import com.lee93.apiboard.vo.FileVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Service
 public class FileService {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     private final FileDAO fileDao;
 
     public FileService(FileDAO fileDao) {
@@ -22,6 +25,7 @@ public class FileService {
      * @param files 파일 정보
      */
     public void saveFiles(int postId, List<FileVO> files) {
+        logger.info(" ## saveFile() 실행");
         if(CollectionUtils.isEmpty(files)){
             return;
         }
@@ -29,5 +33,10 @@ public class FileService {
             file.setPostId(postId);
         }
         fileDao.saveFile(files);
+    }
+
+    public List<FileVO> getFiles(int postId) {
+        logger.info(" ## getFiles() 실행");
+        return fileDao.getFiles(postId);
     }
 }
