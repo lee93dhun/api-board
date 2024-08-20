@@ -19,7 +19,7 @@ public class PostService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
+    
     /**
      * 게시물 등록 서비스
      * @param postFileRegisterVO 등록할 게시물과 첨부파일 클래스

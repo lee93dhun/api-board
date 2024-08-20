@@ -1,10 +1,7 @@
 package com.lee93.apiboard.controller;
 
-import com.lee93.apiboard.service.CategoryService;
-import com.lee93.apiboard.service.BoardListService;
+import com.lee93.apiboard.service.*;
 import com.lee93.apiboard.common.FileUtils;
-import com.lee93.apiboard.service.FileService;
-import com.lee93.apiboard.service.PostService;
 import com.lee93.apiboard.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +15,7 @@ import java.util.List;
 @Controller
 @RequestMapping(path={"/","/board-api"})
 public class BoardController {
+    private final CommentService commentService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PostService postService;
@@ -26,12 +24,13 @@ public class BoardController {
     private final FileUtils fileUtils;
     private final FileService fileService;
 
-    public BoardController(CategoryService categoryService, BoardListService boardListService, PostService postService, FileUtils fileUtils, FileService fileService) {
+    public BoardController(CategoryService categoryService, BoardListService boardListService, PostService postService, FileUtils fileUtils, FileService fileService, CommentService commentService) {
         this.categoryService = categoryService;
         this.boardListService = boardListService;
         this.postService = postService;
         this.fileUtils = fileUtils;
         this.fileService = fileService;
+        this.commentService = commentService;
     }
 
     @GetMapping(path={"/","/board-api"})
@@ -80,7 +79,8 @@ public class BoardController {
     }
 
     // TODO 게시물 등록 OR 디스크에 파일 저장 OR DB에 파일정보 저장 실패에 따른 예외 처리 로직 추가
-    // TODO 게시물 등록 성공 실패 여부에 따른 리다이렉트 로직 추가 (클라이언트에서 vs 서버에서) 서버에서 한다면 리턴 타입을 String? or response.sendRedirect
+    // TODO 게시글 삭제시 DB 데이터 보존 후처리 생각해보기
+
     /**
      * 게시물 등록
      * @param postFileRegisterVO 게시물 등록에 필요한 Value Object
@@ -108,7 +108,7 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/post/{postId}")
+    @GetMapping(path="/post/{postId}")
     public ResponseEntity<DetailResponse> getPost(@PathVariable int postId){
         logger.info(" :::: GET / post / {} 요청 ::::" , postId);
         // 게시물 내용 가져오기
@@ -118,6 +118,15 @@ public class BoardController {
         List<FileVO> files = fileService.getFiles(postId);
         // 댓글 가져오기
         return ResponseEntity.ok(new DetailResponse(true, null, post, files));
+        // TODO 실패할경우 로직
+    }
+
+    @PostMapping(path="/post/{postId}/comment")
+    public ResponseEntity postComment(@PathVariable int postId, @ModelAttribute CommentReqVO commentReqVO){
+        logger.info(" :::: POST / comment 요청 :::: ");
+        commentReqVO.setPostId(postId);
+        commentService.saveComment(commentReqVO);
+        return ResponseEntity.ok(true);
     }
 
 
