@@ -108,6 +108,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * 게시물 상세보기 (게시물 내용, 첨부파일, 댓글)
+     * @param postId 상세보기 할 게시물 id
+     * @return
+     */
     @GetMapping(path="/post/{postId}")
     public ResponseEntity<DetailResponse> getPost(@PathVariable int postId){
         logger.info(" :::: GET / post / {} 요청 ::::" , postId);
@@ -119,13 +124,30 @@ public class BoardController {
         // TODO 실패할경우 로직
     }
 
+    /**
+     * 댓글 작성
+     * @param postId 작성할 댓글의 게시물 id
+     * @param commentReqVO 작성할 댓글 정보
+     * @return
+     */
     @PostMapping(path="/post/{postId}/comment")
     public ResponseEntity postComment(@PathVariable int postId, @ModelAttribute CommentReqVO commentReqVO){
         logger.info(" :::: POST / comment 요청 :::: ");
         commentReqVO.setPostId(postId);
         commentService.saveComment(commentReqVO);
+        // TODO Comment 응답 값 및 예외처리
         return ResponseEntity.ok(true);
     }
+
+    @GetMapping(path="/post/update/{postId}")
+    public ResponseEntity postUpdateForm(@PathVariable int postId){
+        logger.info(" :::: GET / post / update form 요청 ::::");
+        PostVO post = postService.getPost(postId);
+        List<FileVO> files = fileService.getFiles(postId);
+        return ResponseEntity.ok(new UpdateFormResponse(true, null, post, files));
+    }
+
+
 
 
 }
