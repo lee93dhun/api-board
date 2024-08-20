@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,7 +72,6 @@ public class BoardController {
      * 게시물 등록 페이지로 이동
      * @return 카테고리 리스트를 담은 ResponseEntity
      */
-
     @GetMapping(path = "/post")
     public ResponseEntity postRegisterForm(){
         logger.info(" :::: GET / post 요청 :::: ");
@@ -81,36 +79,45 @@ public class BoardController {
         return ResponseEntity.ok(categoryList);
     }
 
-
-
     // TODO 게시물 등록 OR 디스크에 파일 저장 OR DB에 파일정보 저장 실패에 따른 예외 처리 로직 추가
+    // TODO 게시물 등록 성공 실패 여부에 따른 리다이렉트 로직 추가 (클라이언트에서 vs 서버에서) 서버에서 한다면 리턴 타입을 String? or response.sendRedirect
     /**
      * 게시물 등록
-     * @param postRegisterVO 게시물 등록에 필요한 Value Object
+     * @param postFileRegisterVO 게시물 등록에 필요한 Value Object
      * @return 등록 성공여부에따라 메시지, PostRegisterVo 객체를 포함한 응답 객체
      */
     @PostMapping(path="/post")
-    public ResponseEntity<PostResponse> postRegister(@ModelAttribute PostRegisterVO postRegisterVO){
+    public ResponseEntity<RegisterResponse> postRegister(@ModelAttribute PostFileRegisterVO postFileRegisterVO){
         logger.info(":::: POST / post 요청 :::: ");
-        logger.info("postRegisterVO : {}", postRegisterVO);
 
         try{
-            postService.postRegister(postRegisterVO);
-            int postId = postRegisterVO.getPostId();
+            postService.postRegister(postFileRegisterVO);
+            int postId = postFileRegisterVO.getPostId();
 
             // 파일을 로컬에 저장하기
-            List<FileVO> files = fileUtils.uploadFiles(postRegisterVO.getFiles());
+            List<FileVO> files = fileUtils.uploadFiles(postFileRegisterVO.getFiles());
             // DB에 파일 정보 저장
             fileService.saveFiles(postId, files);
 
             // TODO 유효성 검사에 따른 예외처리 추가 및 수정하기
-            return ResponseEntity.ok(new PostResponse(true, null,null));
+            return ResponseEntity.ok(new RegisterResponse(true, null,null));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new PostResponse(false, "서버 오류가 발생했습니다.", postRegisterVO));
+                    .body(new RegisterResponse(false, "서버 오류가 발생했습니다.", postFileRegisterVO));
         }
+    }
 
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<DetailResponse> getPost(@PathVariable int postId){
+        logger.info(" :::: GET / post / {} 요청 ::::" , postId);
+        // 게시물 내용 가져오기
+        PostVO post = postService.getPost(postId);
+
+        // 파일 첨부 가져오기
+
+        // 댓글 가져오기
+        return ResponseEntity.ok(new DetailResponse(true,null,post,null));
     }
 
 

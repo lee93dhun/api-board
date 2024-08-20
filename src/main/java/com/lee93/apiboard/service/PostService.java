@@ -1,7 +1,8 @@
 package com.lee93.apiboard.service;
 
 import com.lee93.apiboard.dao.PostDAO;
-import com.lee93.apiboard.vo.PostRegisterVO;
+import com.lee93.apiboard.vo.PostVO;
+import com.lee93.apiboard.vo.PostFileRegisterVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,16 +20,25 @@ public class PostService {
     }
 
 
-    public void postRegister(PostRegisterVO postRegisterVO) {
+    /**
+     * 게시물 등록 서비스
+     * @param postFileRegisterVO 등록할 게시물과 첨부파일 클래스
+     */
+    public void postRegister(PostFileRegisterVO postFileRegisterVO) {
         logger.info(" ## postRegister() 실행 ");
 
-        String rawPassword = postRegisterVO.getPostPw();
+        String rawPassword = postFileRegisterVO.getPostPw();
         String encodedPassword = passwordEncoder.encode(rawPassword);
-        postRegisterVO.setPostPw(encodedPassword);
-        logger.info("Encoded Password Check: {} ", postRegisterVO.getPostPw());
+        postFileRegisterVO.setPostPw(encodedPassword);
+        logger.info("Encoded Password Check: {} ", postFileRegisterVO.getPostPw());
         // TODO 유효성 검사하기
 
-        postDAO.postRegister(postRegisterVO);
+        postDAO.postRegister(postFileRegisterVO);
     }
 
+
+    public PostVO getPost(int postId) {
+        logger.info(" ## getPost() 실행");
+        return postDAO.getPost(postId);
+    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PostRegisterVO {
+public class PostFileRegisterVO {
     private int postId;
     private int categoryId;
     private String postWriter;

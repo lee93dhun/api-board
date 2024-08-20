@@ -3,8 +3,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lee93.apiboard.dao.PostDAO">
 
-    <insert id="postRegister" parameterType="PostRegisterVO" useGeneratedKeys="true" keyProperty="postId">
+    <insert id="postRegister" parameterType="PostFileRegisterVO" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post (category_id,post_writer, post_pw, post_title,post_content)
         VALUES(#{categoryId},#{postWriter},#{postPw},#{postTitle},#{postContent})
     </insert>
+
+    <select id="getPost" parameterType="int" resultType="PostVO">
+        SELECT p.post_id,
+               p.post_title,
+               p.post_writer,
+               p.post_content,
+               p.post_hits,
+               p.upload_datetime,
+               p.update_datetime,
+               c.category_name
+        FROM post p LEFT JOIN category c ON p.category_id = c.category_id
+        WHERE p.post_id = #{postId}
+    </select>
 </mapper>
