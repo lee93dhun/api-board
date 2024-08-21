@@ -5,6 +5,7 @@ import com.lee93.apiboard.vo.BoardFilterVO;
 import com.lee93.apiboard.vo.BoardListReqVO;
 import com.lee93.apiboard.vo.BoardListRespVO;
 import com.lee93.apiboard.vo.PageVO;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BoardListService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final BoardDAO boardDAO;
 
-    public BoardListService(BoardDAO boardDAO) {
-        this.boardDAO = boardDAO;
-    }
+    private final BoardDAO boardDAO;
 
     public int getPostCount(BoardFilterVO boardFilterVO) {
         logger.info(" ## getPostCount() 실행");

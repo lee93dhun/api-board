@@ -18,7 +18,7 @@
                p.update_datetime,
                c.category_name
         FROM post p LEFT JOIN category c ON p.category_id = c.category_id
-        WHERE p.post_id = #{postId}
+        WHERE p.post_id = #{postId} AND p.is_delete = 0
     </select>
 
     <select id="getPassword" parameterType="int" resultType="String">
@@ -42,4 +42,12 @@
             is_delete = 1
         WHERE post_id = #{postId}
     </update>
+
+    <select id="isExistsPost" parameterType="int" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM post
+            WHERE post_id = #{postId} AND is_delete = 0
+        )
+    </select>
 </mapper>

@@ -1,22 +1,19 @@
 package com.lee93.apiboard.service;
 
 import com.lee93.apiboard.dao.PostDAO;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PasswordEncoder passwordEncoder;
     private final PostDAO postDAO;
-
-    public SecurityService(PasswordEncoder passwordEncoder, PostDAO postDAO) {
-        this.passwordEncoder = passwordEncoder;
-        this.postDAO = postDAO;
-    }
 
     /**
      * 비밀번호 확인

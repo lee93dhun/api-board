@@ -16,4 +16,6 @@ public interface PostDAO {
     void updatePost(PostRequestVO postRequestVO);
 
     boolean deletePost(int postId);
+
+    boolean isExistsPost(int postId);
 }

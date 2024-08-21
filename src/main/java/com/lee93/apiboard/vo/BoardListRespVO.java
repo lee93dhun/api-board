@@ -16,6 +16,7 @@ public class BoardListRespVO {
     private int postHits;
     private LocalDateTime uploadDatetime;
     private LocalDateTime updateDatetime;
+    private boolean isDelete;
 
     private String categoryName;
 

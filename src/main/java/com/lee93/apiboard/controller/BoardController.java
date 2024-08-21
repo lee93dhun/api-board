@@ -3,6 +3,8 @@ package com.lee93.apiboard.controller;
 import com.lee93.apiboard.service.*;
 import com.lee93.apiboard.common.FileUtils;
 import com.lee93.apiboard.vo.*;
+import lombok.RequiredArgsConstructor;
+import org.apache.el.parser.BooleanNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping(path={"/","/board-api"})
+@RequiredArgsConstructor
 public class BoardController {
-    private final CommentService commentService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final CommentService commentService;
     private final PostService postService;
     private final CategoryService categoryService;
     private final BoardListService boardListService;
@@ -25,15 +28,7 @@ public class BoardController {
     private final FileService fileService;
     private final SecurityService securityService;
 
-    public BoardController(CategoryService categoryService, BoardListService boardListService, PostService postService, FileUtils fileUtils, FileService fileService, CommentService commentService, SecurityService securityService) {
-        this.categoryService = categoryService;
-        this.boardListService = boardListService;
-        this.postService = postService;
-        this.fileUtils = fileUtils;
-        this.fileService = fileService;
-        this.commentService = commentService;
-        this.securityService = securityService;
-    }
+    // TODO ResponseEntity 제네릭 타입 지정 및 응답객체 수정
 
     @GetMapping(path={"/","/board-api"})
     public String home(){
@@ -48,7 +43,7 @@ public class BoardController {
      *      RespListPageVO 객체를 포함한 ResponseEntity
      */
     @GetMapping(path="/list")
-    public ResponseEntity getList(@ModelAttribute BoardFilterVO boardFilterVO,
+    public ResponseEntity<RespListPageVO> getList(@ModelAttribute BoardFilterVO boardFilterVO,
                                @RequestParam(required = false, defaultValue = "1") int page){
         logger.info(":::: GET / list 요청 :::: ");
 
@@ -59,14 +54,14 @@ public class BoardController {
 
         List<BoardListRespVO> boardListByFilter = boardListService.getBoardListByFilter(boardListReqVO);
 
-        RespListPageVO respListPageVO = new RespListPageVO();
-        respListPageVO.setCategoryList(categoryList);
-        respListPageVO.setPostCount(postCount);
-        respListPageVO.setBoardFilterVO(boardFilterVO);
-        respListPageVO.setBoardListByFilter(boardListByFilter);
-        respListPageVO.setPageVO(pageVO);
-
-        return ResponseEntity.ok(respListPageVO);
+        return ResponseEntity.ok(new RespListPageVO(
+                true,
+                HttpStatus.OK.value(),
+                null,categoryList,
+                postCount,
+                boardFilterVO,
+                boardListByFilter,
+                pageVO));
     }
 
     /**
@@ -74,7 +69,7 @@ public class BoardController {
      * @return 카테고리 리스트를 담은 ResponseEntity
      */
     @GetMapping(path = "/post")
-    public ResponseEntity postRegisterForm(){
+    public ResponseEntity<List<CategoryVO>> postRegisterForm(){
         logger.info(" :::: GET / post 요청 :::: ");
         List<CategoryVO> categoryList = categoryService.getCategoryList();
         return ResponseEntity.ok(categoryList);
@@ -118,11 +113,18 @@ public class BoardController {
     @GetMapping(path="/post/{postId}")
     public ResponseEntity<DetailResponse> getPost(@PathVariable int postId){
         logger.info(" :::: GET / post / {} 요청 ::::" , postId);
+
+        boolean existsPost = postService.isExistsPost(postId);
+        if(!existsPost){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new DetailResponse(false, HttpStatus.NOT_FOUND.value(),"게시물이 존재하지 않습니다.") {
+                    });
+        }
         // 게시물 내용 가져오기
         PostVO post = postService.getPost(postId);
         List<FileVO> files = fileService.getFiles(postId);
         List<CommentRespVO> comments = commentService.getComments(postId);
-        return ResponseEntity.ok(new DetailResponse(true, null, post, files, comments));
+        return ResponseEntity.ok(new DetailResponse(true, HttpStatus.OK.value(),null, post, files, comments));
         // TODO 실패할경우 로직
     }
 
@@ -139,6 +141,7 @@ public class BoardController {
         commentService.saveComment(commentReqVO);
         // TODO Comment 응답 값 및 예외처리
         return ResponseEntity.ok(true);
+        // TODO 클라이언트에서 /post/{postId} 리다이렉트 하기
     }
 
     /**
@@ -147,14 +150,20 @@ public class BoardController {
      * @return
      */
     @GetMapping(path="/post/update/{postId}")
-    public ResponseEntity postUpdateForm(@PathVariable int postId){
+    public ResponseEntity<UpdateFormResponse> postUpdateForm(@PathVariable int postId){
         logger.info(" :::: GET / post / update form 요청 ::::");
 
+        boolean existsPost = postService.isExistsPost(postId);
+        if(!existsPost){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new UpdateFormResponse(false, HttpStatus.NOT_FOUND.value(),"게시물이 존재하지 않습니다.") {
+                    });
+        }
         List<CategoryVO>  categoryList = categoryService.getCategoryList();
         PostVO post = postService.getPost(postId);
         List<FileVO> files = fileService.getFiles(postId);
 
-        return ResponseEntity.ok(new UpdateFormResponse(true, null, post, categoryList, files));
+        return ResponseEntity.ok(new UpdateFormResponse(true, HttpStatus.OK.value(), "null", post, categoryList, files));
     }
 
     /**
@@ -167,7 +176,7 @@ public class BoardController {
     @PutMapping(path = "/post/update/{postId}")
     public ResponseEntity<PostResponse> postUpdate(@PathVariable int postId, @ModelAttribute PostRequestVO postRequestVO){
         logger.info(" :::: PUT / post/ update 요청 :::: ");
-        // 비밀번호 확인
+
         boolean pwResult = securityService.isPasswordMatch(postId, postRequestVO.getPostPw());
         if(!pwResult){
             return ResponseEntity.ok(new PostResponse(false, "비밀번호를 확인해 주세요.",postRequestVO));
@@ -181,18 +190,19 @@ public class BoardController {
 
     // TODO 삭제시 DB 에서 삭제 or 리스트에서만 삭제
     @PatchMapping(path= "/post/delete/{postId}")
-    public ResponseEntity deletePost(@PathVariable int postId, @RequestBody String inputPw){
+    public ResponseEntity<String> deletePost(@PathVariable int postId, @RequestBody String inputPw){
         logger.info(" :::: PATCH / post / delete 요청");
         boolean pwResult = securityService.isPasswordMatch(postId, inputPw);
+        // TODO 존재하지 않는 postId 삭제요청시 처리
         if(!pwResult){
             return ResponseEntity.status(403).body("비밀번호를 확인해주세요.");
         }
         boolean success = postService.deletePost(postId);
 
         if(success){
-            return null;
+            return ResponseEntity.ok("게시물이 성공적으로 삭제되었습니다.");
         }else {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시물 삭제에 실패하였습니다.");
         }
     }
 

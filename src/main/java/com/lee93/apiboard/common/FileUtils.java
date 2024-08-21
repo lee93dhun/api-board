@@ -18,7 +18,6 @@ import java.util.UUID;
 @Component
 public class FileUtils {
     private final String uploadPath = Paths.get("E:","intellij-workspace","board","uploaded-files").toString();
-
     /**
      * 다중 파일 업로드
      * @param multipartFiles 파일 객체 리스트

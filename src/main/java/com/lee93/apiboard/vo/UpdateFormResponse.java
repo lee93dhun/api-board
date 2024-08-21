@@ -12,9 +12,16 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateFormResponse {
     private boolean success;
+    private int status;
     private String message;
 
     private PostVO postVO;
     private List<CategoryVO> categoryList = new ArrayList<>();
     private List<FileVO> files = new ArrayList<>();
+
+    public UpdateFormResponse(boolean success, int status, String message) {
+        this.success = success;
+        this.status = status;
+        this.message = message;
+    }
 }

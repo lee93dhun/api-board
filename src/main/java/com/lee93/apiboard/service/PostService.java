@@ -3,23 +3,19 @@ package com.lee93.apiboard.service;
 import com.lee93.apiboard.dao.PostDAO;
 import com.lee93.apiboard.vo.PostVO;
 import com.lee93.apiboard.vo.PostRequestVO;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     private final PostDAO postDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public PostService(PostDAO postDAO, PasswordEncoder passwordEncoder) {
-        this.postDAO = postDAO;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    
     /**
      * 게시물 등록 서비스
      * @param postRequestVO 등록할 게시물과 첨부파일 클래스
@@ -63,5 +59,10 @@ public class PostService {
     public boolean deletePost(int postId) {
         logger.info(" ## deletePost() 실행");
         return postDAO.deletePost(postId);
+    }
+
+    public boolean isExistsPost(int postId) {
+        logger.info(" ## isExists() 실행");
+        return postDAO.isExistsPost(postId);
     }
 }
