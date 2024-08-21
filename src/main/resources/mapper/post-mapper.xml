@@ -50,4 +50,11 @@
             WHERE post_id = #{postId} AND is_delete = 0
         )
     </select>
+
+    <update id="hitsCountUp" parameterType="int">
+        UPDATE post
+        SET
+            post_hits = post_hits+1
+        WHERE post_id = #{postId}
+    </update>
 </mapper>

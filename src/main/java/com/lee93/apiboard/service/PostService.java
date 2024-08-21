@@ -65,4 +65,9 @@ public class PostService {
         logger.info(" ## isExists() 실행");
         return postDAO.isExistsPost(postId);
     }
+
+    public void hitsCountUp(int postId) {
+        logger.info(" ## hitsCountUp() 실행");
+        postDAO.hitsCountUp(postId);
+    }
 }

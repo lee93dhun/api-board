@@ -120,12 +120,16 @@ public class BoardController {
                     .body(new DetailResponse(false, HttpStatus.NOT_FOUND.value(),"게시물이 존재하지 않습니다.") {
                     });
         }
-        // 게시물 내용 가져오기
+
         PostVO post = postService.getPost(postId);
         List<FileVO> files = fileService.getFiles(postId);
         List<CommentRespVO> comments = commentService.getComments(postId);
+
+        // TODO 게시물 카운트 중복 방지
+        postService.hitsCountUp(postId);
+
         return ResponseEntity.ok(new DetailResponse(true, HttpStatus.OK.value(),null, post, files, comments));
-        // TODO 실패할경우 로직
+        // TODO 실패할경우 응답처리
     }
 
     /**
@@ -141,7 +145,7 @@ public class BoardController {
         commentService.saveComment(commentReqVO);
         // TODO Comment 응답 값 및 예외처리
         return ResponseEntity.ok(true);
-        // TODO 클라이언트에서 /post/{postId} 리다이렉트 하기
+        // TODO 클라이언트에서 /post/{postId} 리다이렉트 하기? 댓글부분만 변화?
     }
 
     /**

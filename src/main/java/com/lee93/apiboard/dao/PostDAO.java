@@ -18,4 +18,6 @@ public interface PostDAO {
     boolean deletePost(int postId);
 
     boolean isExistsPost(int postId);
+
+    void hitsCountUp(int postId);
 }
