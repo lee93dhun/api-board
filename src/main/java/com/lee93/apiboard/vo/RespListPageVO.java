@@ -17,7 +17,7 @@ public class RespListPageVO {
 
     private List<CategoryVO> categoryList;
     private int postCount;
-    private  BoardFilterVO boardFilterVO;
+    private BoardFilterVO boardFilterVO;
     private List<BoardListRespVO> boardListByFilter;
     private PageVO pageVO;
 }

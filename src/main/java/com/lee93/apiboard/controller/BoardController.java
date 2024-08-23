@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @Controller
 @RequestMapping(path={"/","/board-api"})
 @RequiredArgsConstructor
@@ -54,10 +55,12 @@ public class BoardController {
 
         List<BoardListRespVO> boardListByFilter = boardListService.getBoardListByFilter(boardListReqVO);
 
+        // TODO 실패시 응답 처리
         return ResponseEntity.ok(new RespListPageVO(
                 true,
                 HttpStatus.OK.value(),
-                null,categoryList,
+                "게시판 리스트 페이지 데이터 불러오기 성공",
+                categoryList,
                 postCount,
                 boardFilterVO,
                 boardListByFilter,
