@@ -3,13 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lee93.apiboard.dao.CommentDAO">
 
-    <insert id="saveComment" parameterType="CommentReqVO">
+    <insert id="registerComment" useGeneratedKeys="true" keyProperty="commentId" parameterType="CommentReqVO">
         INSERT INTO comments (comment_writer, comment_content, post_id)
         VALUES(#{commentWriter}, #{commentContent}, #{postId})
     </insert>
+    <select id="getRegisteredComment" parameterType="int" resultType="CommentRespVO">
+        SELECT *
+        FROM comments
+        WHERE comment_id = #{commentId}
+    </select>
+
 
     <select id="getComments" parameterType="int" resultType="CommentRespVO">
-        SELECT * FROM comments WHERE post_id = #{postId};
+        SELECT *
+        FROM comments
+        WHERE post_id = #{postId} AND comment_del_yn = 0
+        ORDER BY comment_datetime DESC;
     </select>
+
 
 </mapper>

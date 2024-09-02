@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CommentReqVO {
+    private int commentId;
     private int postId;
     private String commentWriter;
     private String commentContent;

@@ -8,7 +8,10 @@ import java.util.List;
 
 @Mapper
 public interface CommentDAO {
-    void saveComment(CommentReqVO commentReqVO);
+
+    int registerComment(CommentReqVO commentReqVO);
+    CommentRespVO getRegisteredComment(int commentId);
 
     List<CommentRespVO> getComments(int postId);
+
 }

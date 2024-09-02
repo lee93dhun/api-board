@@ -21,9 +21,11 @@ public class CommentService {
      * 댓글 저장
      * @param commentReqVO 저장할 댓글의 정보
      */
-    public void saveComment(CommentReqVO commentReqVO) {
+    public CommentRespVO registerComment(CommentReqVO commentReqVO) {
         logger.info(" ## saveComment() 실행");
-        commentDAO.saveComment(commentReqVO);
+        commentDAO.registerComment(commentReqVO);
+        CommentRespVO commentRespVO =commentDAO.getRegisteredComment(commentReqVO.getCommentId());
+        return commentRespVO;
     }
 
     /**

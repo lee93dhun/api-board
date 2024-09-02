@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping(path={"/","/board-api"})
+@RequestMapping(path="/api")
 @RequiredArgsConstructor
 public class BoardController {
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -31,10 +31,6 @@ public class BoardController {
 
     // TODO ResponseEntity 제네릭 타입 지정 및 응답객체 수정
 
-    @GetMapping(path={"/","/board-api"})
-    public String home(){
-        return "redirect:/board-api/list";
-    }
 
     /**
      * 게시판 리스트를 가져오는 요청
@@ -71,7 +67,7 @@ public class BoardController {
      * 게시물 등록 페이지로 이동
      * @return 카테고리 리스트를 담은 ResponseEntity
      */
-    @GetMapping(path = "/post")
+    @GetMapping(path = "/postForm")
     public ResponseEntity<List<CategoryVO>> postRegisterForm(){
         logger.info(" :::: GET / post 요청 :::: ");
         List<CategoryVO> categoryList = categoryService.getCategoryList();
@@ -94,9 +90,7 @@ public class BoardController {
             postService.postRegister(postRequestVO);
             int postId = postRequestVO.getPostId();
 
-            // 파일을 로컬에 저장하기
             List<FileVO> files = fileUtils.uploadFiles(postRequestVO.getFiles());
-            // DB에 파일 정보 저장
             fileService.saveFiles(postId, files);
 
             // TODO 유효성 검사에 따른 예외처리 추가 및 수정하기
@@ -126,29 +120,40 @@ public class BoardController {
 
         PostVO post = postService.getPost(postId);
         List<FileVO> files = fileService.getFiles(postId);
-        List<CommentRespVO> comments = commentService.getComments(postId);
+//        List<CommentRespVO> comments = commentService.getComments(postId);
 
         // TODO 게시물 카운트 중복 방지
         postService.hitsCountUp(postId);
 
-        return ResponseEntity.ok(new DetailResponse(true, HttpStatus.OK.value(),null, post, files, comments));
+        return ResponseEntity.ok(new DetailResponse(true, HttpStatus.OK.value(),null, post, files));
         // TODO 실패할경우 응답처리
     }
 
     /**
-     * 댓글 작성
+     * 댓글 리스트 가져오기
+     * @param postId 가져올 댓글의 게시물 ID
+     * @return
+     */
+    @GetMapping(path="/comments/{postId}")
+    public ResponseEntity<List<CommentRespVO>> getComment(@PathVariable int postId){
+        logger.info(" :::: GET / comments/{} 요청 ::::");
+        List<CommentRespVO> comments = commentService.getComments(postId);
+        return ResponseEntity.ok(comments);
+    }
+    /**
+     * 댓글 등록
      * @param postId 작성할 댓글의 게시물 id
      * @param commentReqVO 작성할 댓글 정보
      * @return
      */
-    @PostMapping(path="/post/{postId}/comment")
-    public ResponseEntity postComment(@PathVariable int postId, @ModelAttribute CommentReqVO commentReqVO){
+    @PostMapping(path="/comments/{postId}")
+    public ResponseEntity<CommentRespVO> postComment(
+            @PathVariable int postId, @ModelAttribute CommentReqVO commentReqVO){
         logger.info(" :::: POST / comment 요청 :::: ");
         commentReqVO.setPostId(postId);
-        commentService.saveComment(commentReqVO);
+        CommentRespVO commentRespVO = commentService.registerComment(commentReqVO);
         // TODO Comment 응답 값 및 예외처리
-        return ResponseEntity.ok(true);
-        // TODO 클라이언트에서 /post/{postId} 리다이렉트 하기? 댓글부분만 변화?
+        return ResponseEntity.ok(commentRespVO);
     }
 
     /**
